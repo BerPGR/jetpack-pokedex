@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">New Poke Api</string>
+    <string name="title_activity_pokemon">PokemonActivity</string>
+    <string name="title_activity_main2">MainActivity2</string>
+</resources>
