@@ -16,14 +16,15 @@ data class PokemonAll(
 )
 
 data class Pokemon(
+    val id: Int,
     val height: Int,
     val name: String,
     val sprites: Sprites,
     val weight: Int,
     val types: List<PokemonType>,
-    val abilities: List<PokemonAbility>
+    val abilities: List<PokemonAbility>,
+    val species: Species
 )
-
 
 data class Sprites(
     val back_default: String,
@@ -56,4 +57,9 @@ data class TypeInfo(
 data class PokemonType(
     val slot: Int,
     val type: TypeInfo
+)
+
+data class Species(
+    val name: String,
+    val url: String
 )

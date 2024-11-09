@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,18 +31,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.newpokeapi.model.EvolutionChain
 import br.com.newpokeapi.model.Pokemon
 import br.com.newpokeapi.model.PokemonAll
+import br.com.newpokeapi.model.Specie
 import br.com.newpokeapi.model.Type
 import br.com.newpokeapi.repository.PokemonRepository
 import br.com.newpokeapi.screens.PokemonScreen
 import br.com.newpokeapi.service.RetrofitHelper
 import br.com.newpokeapi.ui.theme.NewPokeApiTheme
 import br.com.newpokeapi.viewmodel.PokemonViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("CoroutineCreationDuringComposition", "MutableCollectionMutableState")
@@ -71,7 +68,14 @@ class MainActivity : ComponentActivity() {
                             val pokemonName = backStackEntry.arguments?.getString("pokemonName") ?: ""
 
                             var pokemon by remember { mutableStateOf<Pokemon?>(null) }
+                            var pokemonSpecie by remember {
+                                mutableStateOf<Specie?>(null)
+                            }
+                            var pokemonEvolution by remember { mutableStateOf<Pokemon?>(null) }
                             var type by remember { mutableStateOf(mutableListOf<Type>()) }
+                            var evolution by remember {
+                                mutableStateOf<EvolutionChain?>(null)
+                            }
 
                             LaunchedEffect(pokemonName) {
                                 pokemon = pokemonViewModel.getPokemon(pokemonName)
@@ -83,15 +87,25 @@ class MainActivity : ComponentActivity() {
                                         loadedTypes.add(selectedType)
                                     }
                                     type = loadedTypes
+                                    Log.i("POKEMON_EVOLUTION", "$it")
+                                    pokemonSpecie = pokemonViewModel.getPokemonSpecieById(it.id)
+                                }
+
+                                pokemonSpecie?.let {
+                                    val idEvolution = Regex("/(\\d+)/$").find(it.evolutionChain.url)?.groupValues?.get(1)
+                                    if (idEvolution != null) {
+                                        evolution = pokemonViewModel.getPokemonEvolutionById(idEvolution.toInt())
+                                    }
+                                }
+
+                                evolution?.let {
+                                    pokemonEvolution = pokemonViewModel.getPokemon(it.chain.evolvesTo[0].species.name)
                                 }
                             }
 
-                            Log.i("POKEMON_INFO", "$pokemon")
-                            for (types in type) {
-                                Log.i("POKEMON_TYPES", "$types")
+                            if (pokemon != null && pokemonEvolution != null) {
+                                PokemonScreen(pokemon = pokemon!!, evolution = pokemonEvolution!!, types = type, navController = navController, viewModel = pokemonViewModel)
                             }
-
-                            pokemon?.let { PokemonScreen(pokemon = it, types = type, navController = navController, viewModel = pokemonViewModel) }
                         }
                     }
                 }

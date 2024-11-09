@@ -3,8 +3,10 @@ package br.com.newpokeapi.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.newpokeapi.model.EvolutionChain
 import br.com.newpokeapi.model.Pokemon
 import br.com.newpokeapi.model.PokemonAll
+import br.com.newpokeapi.model.Specie
 import br.com.newpokeapi.model.Type
 import br.com.newpokeapi.repository.PokemonRepository
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +38,18 @@ class PokemonViewModel(val pokeRepository: PokemonRepository) : ViewModel() {
     suspend fun getTypeById(typeName: String) : Type {
         return withContext(Dispatchers.IO) {
             pokeRepository.getTypeByNameFromApi(typeName)
+        }
+    }
+
+    suspend fun getPokemonEvolutionById(id: Int) : EvolutionChain {
+        return withContext(Dispatchers.IO) {
+            pokeRepository.getPokemonEvolutionById(id)
+        }
+    }
+
+    suspend fun getPokemonSpecieById(id: Int) : Specie {
+        return withContext(Dispatchers.IO) {
+            pokeRepository.getPokemonSpecieById(id)
         }
     }
 }
