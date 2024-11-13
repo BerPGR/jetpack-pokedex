@@ -22,5 +22,6 @@ data class Specie(
 )
 
 data class SpecieEvolutionChain(
+    val name: String,
     val url: String
 )

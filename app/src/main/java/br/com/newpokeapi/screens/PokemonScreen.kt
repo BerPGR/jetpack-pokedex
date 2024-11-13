@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,25 +21,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import br.com.newpokeapi.model.EvolutionChain
 import br.com.newpokeapi.model.Pokemon
 import br.com.newpokeapi.model.Type
 import br.com.newpokeapi.viewmodel.PokemonViewModel
@@ -48,20 +44,38 @@ import com.bumptech.glide.integration.compose.GlideImage
 @Composable
 fun PokemonScreen(
     pokemon: Pokemon,
-    evolution: Pokemon,
+    evolution: Pokemon?,
     navController: NavHostController,
     viewModel: PokemonViewModel,
     types: List<Type>
 ) {
-    
-    Column(
+    LazyColumn(
         modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 16.dp)
     ) {
-        AppBar(navController = navController, pokemon = pokemon)
+        // AppBar
+        item {
+            AppBar(
+                navController = navController,
+                pokemon = pokemon,
+                )
+        }
 
-        PokemonImage(pokemon = pokemon, types = types)
-        
-        PokemonInfo(pokemon = pokemon, types = types, evolution = evolution)
+        // Pokemon Image
+        item {
+            PokemonImage(
+                pokemon = pokemon,
+                types = types,
+                )
+        }
+
+        // Pokemon Info
+        item {
+            PokemonInfo(
+                pokemon = pokemon,
+                types = types,
+                evolution = evolution,)
+        }
     }
 }
 
@@ -159,18 +173,17 @@ private fun getAllColors(types: List<Type>) : List<Color> {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun PokemonInfo(pokemon: Pokemon, types: List<Type>, evolution: Pokemon) {
+fun PokemonInfo(pokemon: Pokemon, types: List<Type>, evolution: Pokemon?) {
     val pokeHeight = pokemon.height / 10.0
-    val formattedHeight = String.format("%.1f", pokeHeight)
+    val formattedHeight = String.format("%.2f", pokeHeight)
     Column(
         modifier = Modifier
-            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-            .fillMaxSize()
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp).fillMaxSize()
+        // Remove fillMaxSize() here - this was causing the issue
     ) {
-        Text(text = pokemon.name.capitalize(), fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        pokemon?.name?.let { Text(text = it.capitalize(), fontSize = 28.sp, fontWeight = FontWeight.Bold) }
 
-        LazyRow(
-        ) {
+        LazyRow {
             items(types) { type ->
                 GlideImage(
                     model = type.sprites.generation_iii.colosseum.name_icon,
@@ -222,28 +235,38 @@ fun PokemonInfo(pokemon: Pokemon, types: List<Type>, evolution: Pokemon) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(text = "Weight", fontSize = 16.sp)
-                    Text(text = "${pokemon.weight} kg", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = "${pokemon?.weight} kg", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
         }
 
-
         Text(text = "Evolution", fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 36.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            GlideImage(
-                model = evolution.sprites.front_default,
-                contentDescription = "Evolution Picture",
-                modifier = Modifier.size(60.dp)
-            )
-            Text(text = evolution.name.capitalize(), modifier = Modifier.padding(start = 10.dp))
+        if (evolution == null) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "There's no evolution for this Pokemon", textAlign = TextAlign.Center, modifier = Modifier.padding(start = 10.dp))
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                GlideImage(
+                    model = evolution.sprites.front_default,
+                    contentDescription = "Evolution Picture",
+                    modifier = Modifier.size(60.dp)
+                )
+                Text(text = evolution.name.capitalize(), modifier = Modifier.padding(start = 10.dp))
+            }
+
         }
 
         Text(text = "Abilities", fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 36.dp))
-        LazyColumn {
-            items(pokemon.abilities) { ability ->
+        // Replace LazyColumn with Column since it's inside another LazyColumn
+        Column {
+            pokemon.abilities.forEach { ability ->
                 val names = ability.ability.name.split("-").joinToString(" ")
                 Text(text = names.capitalize(), modifier = Modifier.padding(top = 10.dp))
             }

@@ -24,7 +24,6 @@ class PokemonViewModel(val pokeRepository: PokemonRepository) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            Log.i("Poke_api", "Calling pokemons")
             _state.value = pokeRepository.getAllPokemonFromAPi()
         }
     }
