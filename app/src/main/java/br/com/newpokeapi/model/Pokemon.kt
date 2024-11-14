@@ -1,6 +1,8 @@
 package br.com.newpokeapi.model
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 data class PokemonResponse(
@@ -15,7 +17,9 @@ data class PokemonAll(
     val apiUrl: String
 )
 
+@Entity
 data class Pokemon(
+    @PrimaryKey(autoGenerate = true)
     val id: Int,
     val height: Int,
     val name: String,
@@ -26,6 +30,7 @@ data class Pokemon(
     val species: Species
 )
 
+@Parcelize
 data class Sprites(
     val back_default: String,
     val back_female: String,
@@ -35,7 +40,7 @@ data class Sprites(
     val front_female: String,
     val front_shiny: String,
     val front_shiny_female: String,
-)
+) : Parcelable
 
 data class Ability(
     val name: String,

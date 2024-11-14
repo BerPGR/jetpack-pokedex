@@ -6,10 +6,12 @@ import br.com.newpokeapi.model.Pokemon
 import br.com.newpokeapi.model.PokemonAll
 import br.com.newpokeapi.model.Specie
 import br.com.newpokeapi.model.Type
+import br.com.newpokeapi.room.PokemonDB
 import br.com.newpokeapi.service.PokemonAPI
 
 class PokemonRepository(
-    val pokeApi: PokemonAPI
+    val pokeApi: PokemonAPI,
+    val pokemonDB: PokemonDB
 ) {
 
     suspend fun getAllPokemonFromAPi(): List<PokemonAll> {
@@ -31,5 +33,10 @@ class PokemonRepository(
 
     suspend fun getPokemonSpecieById(id: Int) : Specie {
         return pokeApi.getPokemonSpecie(id)
+    }
+
+    // Room DB Functions
+    suspend fun addPokemonToRoom(pokemon: Pokemon) {
+        pokemonDB.pokemonDao().addPokemon(pokemon)
     }
 }

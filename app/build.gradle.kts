@@ -84,6 +84,7 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation("com.google.code.gson:gson:2.11.0")
 
     // Glide
     implementation("com.github.bumptech.glide:compose:1.0.0-alpha.1")

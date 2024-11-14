@@ -51,4 +51,10 @@ class PokemonViewModel(val pokeRepository: PokemonRepository) : ViewModel() {
             pokeRepository.getPokemonSpecieById(id)
         }
     }
+
+    fun addPokemon(pokemon: Pokemon) {
+        viewModelScope.launch {
+            pokeRepository.addPokemonToRoom(pokemon)
+        }
+    }
 }

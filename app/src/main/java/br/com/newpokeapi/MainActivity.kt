@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -41,6 +42,7 @@ import br.com.newpokeapi.model.PokemonAll
 import br.com.newpokeapi.model.Specie
 import br.com.newpokeapi.model.Type
 import br.com.newpokeapi.repository.PokemonRepository
+import br.com.newpokeapi.room.PokemonDB
 import br.com.newpokeapi.screens.PokemonScreen
 import br.com.newpokeapi.service.RetrofitHelper
 import br.com.newpokeapi.ui.theme.NewPokeApiTheme
@@ -57,8 +59,10 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
 
                     val navController = rememberNavController()
+                    val mContext = LocalContext.current
                     val pokeApi = RetrofitHelper.provideApi(RetrofitHelper.provideRetrofit())
-                    val pokeRepo = PokemonRepository(pokeApi)
+                    val pokeDB = PokemonDB.getInstance(mContext)
+                    val pokeRepo = PokemonRepository(pokeApi, pokeDB)
                     val pokemonViewModel = PokemonViewModel(pokeRepo)
 
                     NavHost(navController = navController, startDestination = "main_screen") {

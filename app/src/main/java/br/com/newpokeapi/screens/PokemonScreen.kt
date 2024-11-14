@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import br.com.newpokeapi.model.Pokemon
 import br.com.newpokeapi.model.Type
@@ -58,6 +59,7 @@ fun PokemonScreen(
             AppBar(
                 navController = navController,
                 pokemon = pokemon,
+                viewModel = viewModel
                 )
         }
 
@@ -80,7 +82,7 @@ fun PokemonScreen(
 }
 
 @Composable
-fun AppBar(navController: NavHostController, pokemon: Pokemon) {
+fun AppBar(navController: NavHostController, pokemon: Pokemon, viewModel: PokemonViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -97,7 +99,9 @@ fun AppBar(navController: NavHostController, pokemon: Pokemon) {
 
         Text(text = pokemon.name.capitalize(), fontSize = 23.sp)
 
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = {
+            viewModel.addPokemon(pokemon)
+        }) {
             Icon(imageVector = Icons.Outlined.FavoriteBorder, contentDescription = "Favorite")
         }
     }
