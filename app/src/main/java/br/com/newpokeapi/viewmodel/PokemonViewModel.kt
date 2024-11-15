@@ -21,12 +21,13 @@ class PokemonViewModel(val pokeRepository: PokemonRepository) : ViewModel() {
     val state: StateFlow<List<PokemonAll>>
         get() = _state
 
-
     init {
         viewModelScope.launch {
             _state.value = pokeRepository.getAllPokemonFromAPi()
         }
     }
+
+    val favoritePokemons = pokeRepository.favoritePokemons()
 
     suspend fun getPokemon(pokemonName: String): Pokemon {
         return withContext(Dispatchers.IO) {

@@ -24,7 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +42,7 @@ import br.com.newpokeapi.model.Specie
 import br.com.newpokeapi.model.Type
 import br.com.newpokeapi.repository.PokemonRepository
 import br.com.newpokeapi.room.PokemonDB
+import br.com.newpokeapi.screens.FavoriteScreen
 import br.com.newpokeapi.screens.PokemonScreen
 import br.com.newpokeapi.service.RetrofitHelper
 import br.com.newpokeapi.ui.theme.NewPokeApiTheme
@@ -68,6 +68,10 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "main_screen") {
                         composable(route = "main_screen") {
                             MainScreen(viewModel = pokemonViewModel, navController = navController)
+                        }
+
+                        composable(route = "favorites_screen") {
+                            FavoriteScreen(pokemonViewModel, navController)
                         }
 
                         composable(route = "pokemon_screen/{pokemonName}") { backStackEntry ->
@@ -156,14 +160,20 @@ private suspend fun getNextPokemonEvolution(
 @Composable
 fun MainScreen(viewModel: PokemonViewModel, navController: NavHostController) {
     val state by viewModel.state.collectAsState()
-    AllPokemons(pokemons = state, navController = navController, viewModel = viewModel)
+    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+        AllPokemons(pokemons = state, navController = navController, viewModel = viewModel)
+        Button(onClick = {
+            navController.navigate("favorites_screen")
+        }) {
+            Text(text = "Favorites")
+        }
+    }
 }
 
 @Composable
 fun AllPokemons(pokemons: List<PokemonAll>, navController: NavHostController, viewModel: PokemonViewModel) {
     LazyVerticalGrid(columns = GridCells.Fixed(2),
         modifier = Modifier
-            .fillMaxSize()
             .padding(top = 100.dp)
         ) {
         items(pokemons) {item ->

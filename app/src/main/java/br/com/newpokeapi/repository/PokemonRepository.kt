@@ -4,6 +4,7 @@ import android.util.Log
 import br.com.newpokeapi.model.EvolutionChain
 import br.com.newpokeapi.model.Pokemon
 import br.com.newpokeapi.model.PokemonAll
+import br.com.newpokeapi.model.PokemonResponse
 import br.com.newpokeapi.model.Specie
 import br.com.newpokeapi.model.Type
 import br.com.newpokeapi.room.PokemonDB
@@ -13,6 +14,7 @@ class PokemonRepository(
     val pokeApi: PokemonAPI,
     val pokemonDB: PokemonDB
 ) {
+    fun favoritePokemons() = pokemonDB.pokemonDao().getAllPokemons()
 
     suspend fun getAllPokemonFromAPi(): List<PokemonAll> {
         val response = pokeApi.getAllPokemons()
